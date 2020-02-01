@@ -4,8 +4,12 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+
+
+
 // Include db file, but grab only sequelize instance from it, since we need it for the authenticiation function
-const { sequelize } = require('./db');
+const { sequelize, models } = require('./db');
+const { User, Course } = require('./models');
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
 
@@ -57,6 +61,18 @@ app.use((req, res) => {
     message: 'Route Not Found',
   });
 });
+
+// auth middleware
+//on request, get auth headers (email and hashed password)
+// first get the email and find that user in the db
+//if user exists, check the password against the one in the db
+// If the password comparison succeeds, then set the user on the request so that each following middleware function has access to it.
+
+
+app.use((req, res, next)=>{
+  
+});
+
 
 // setup a global error handler
 app.use((err, req, res, next) => {
