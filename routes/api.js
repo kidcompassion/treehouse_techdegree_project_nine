@@ -39,15 +39,15 @@ const authenticateUser = async (req, res, next) => {
         
         // Get the user based on auth header email
         const userLookup = await User.findAll({
-                                    attributes:["password"],
                                     where: {
                                         emailAddress: credentials.name
-                                        
                                     }
                                 });
 
         // Get hashed password and set it to var for comparing
-        userLookup.map((user)=> userPassword = user.password);
+        userLookup.map((user)=> {
+            userPassword = user.password;
+        });// userPassword = user.password//);
                             
         // Compare password to one in DB
         const passwordMatch = bcryptjs.compareSync(credentials.pass, userPassword);
@@ -56,6 +56,7 @@ const authenticateUser = async (req, res, next) => {
         if(passwordMatch){
             req.currentUser = userLookup;
         } else {
+            console.log('no creds');
             res.status(401).end;
         }
     }
@@ -82,8 +83,14 @@ router.get('/', authenticateUser, (req, res) => {
  */
 
  // Get user collection
- router.get('/users', asyncHandler(async (req, res)=>{
-    const users = await User.findAll();
+ router.get('/users', authenticateUser, asyncHandler(async (req, res)=>{
+    let userId;
+    req.currentUser.map((user)=> {
+        userId = user.id;
+    });// userPassword = user.password//);
+    const users = await User.findByPk(userId, {
+        attributes: ["id", "firstName", "lastName", "emailAddress"]
+    });
     res.status(200).json(users);
  }));
 
@@ -138,8 +145,10 @@ router.delete('/users/:id', asyncHandler( async (req, res)=>{
  // Get course collection
  router.get('/courses', asyncHandler(async (req, res)=>{
     const courses = await Course.findAll({
+        attributes: ["id", "title", "description", "estimatedTime", "materialsNeeded", "userId"],
         include: {
-            model: User
+            model: User,
+            attributes: ["id", "firstName", "lastName", "emailAddress"] 
         }
     });
     res.status(200).json(courses);
