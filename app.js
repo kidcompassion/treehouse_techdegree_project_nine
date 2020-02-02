@@ -5,35 +5,24 @@ const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 
+// Include models db file, but grab only sequelize instance from it, since we need it for the authenticiation function
+const { sequelize } = require('./models');
 
-
-// Include db file, but grab only sequelize instance from it, since we need it for the authenticiation function
-const { sequelize, models } = require('./db');
-const { User, Course } = require('./models');
+// Set up router files
 const indexRouter = require('./routes/index');
 const apiRouter = require('./routes/api');
-
-
 
 // Set up connection test
 const authentication = async ()=>{
     try{
       await sequelize.authenticate();
       console.log('Connection successful');
-
     } catch(err){
         console.log('No connection', err);
-
     }  
 }
 
 authentication();
-
-
-
-
-
-
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
@@ -41,18 +30,15 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 // create the Express app
 const app = express();
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
-// TODO setup your api routes here
-
+// Set up subroutes
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
-
 
 
 // send 404 if no other route matched
@@ -62,24 +48,11 @@ app.use((req, res) => {
   });
 });
 
-// auth middleware
-//on request, get auth headers (email and hashed password)
-// first get the email and find that user in the db
-//if user exists, check the password against the one in the db
-// If the password comparison succeeds, then set the user on the request so that each following middleware function has access to it.
-
-
-app.use((req, res, next)=>{
-  
-});
-
-
 // setup a global error handler
 app.use((err, req, res, next) => {
   if (enableGlobalErrorLogging) {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
-
   res.status(err.status || 500).json({
     message: err.message,
     error: {},

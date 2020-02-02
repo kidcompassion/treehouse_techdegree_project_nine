@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-
 // setup a friendly greeting for the root route
 router.get('/', (req, res) => {
     res.json({

@@ -3,7 +3,6 @@
 const Sequelize = require('sequelize');
 
 
-
 module.exports = (sequelize) =>{
 	class Course extends Sequelize.Model{}
 
@@ -29,33 +28,26 @@ module.exports = (sequelize) =>{
 		},
 		estimatedTime: {
 			type: Sequelize.STRING,
-			nullable: true,
-			validate:{
-				notEmpty:true
-			}
+			nullable: true
 		},
 		materialsNeeded: {
 			type: Sequelize.STRING,
 			nullable: true,
-			validate:{
-				notEmpty:true
-			}
 		}
 		
 	},{sequelize});
 
+	// Get the User model so we can associate to it
 	const User = sequelize.define('User');
 
 	Course.associate = function(models) {
-		
 		Course.belongsTo(User, {
+			// Set the foreign key to be the userid, referencing the id field in the User model
 			foreignKey: {
 				fieldName: 'userId',
 				allowNull: false,
 			},
-			
 		});
 	}
-
 	return Course;
 }

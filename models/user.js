@@ -1,8 +1,6 @@
 'use strict';
 const Sequelize = require('Sequelize');
 
-
-
 module.exports = (sequelize) => {
 	class User extends Sequelize.Model{}
 	User.init({
@@ -46,6 +44,7 @@ module.exports = (sequelize) => {
 		  },
 	},{sequelize});
 
+	// Set hasMany relationship to Course
 	User.associate = function(models) {
 		User.hasMany(models.Course)
 	  };
