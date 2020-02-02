@@ -76,7 +76,6 @@ const authenticateUser = async (req, res, next) => {
     }
   };
   
-
 /**
  * Route-level validation
  */
