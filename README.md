@@ -36,3 +36,10 @@ npm start
 ```
 
 To test the Express server, browse to the URL [http://localhost:5000/](http://localhost:5000/).
+
+
+
+## Project Notes
+
+This project is a simple API course listing, completed as part of unit 9 in Treehouse' Full Stack JavaScript TechDegree.
+
