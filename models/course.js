@@ -2,7 +2,6 @@
 
 const Sequelize = require('sequelize');
 
-
 module.exports = (sequelize) =>{
 	class Course extends Sequelize.Model{}
 
