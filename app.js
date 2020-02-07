@@ -28,10 +28,13 @@ authentication();
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
-const app = express();
-
+const app = express()
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+
+
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));

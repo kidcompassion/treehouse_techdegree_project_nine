@@ -137,11 +137,12 @@ router.get('/', authenticateUser, (req, res) => {
 /**
  * POST /api/users 201 - Creates a user, sets the Location header to "/", and returns no content
  * */
-router.post('/users', authenticateUser, asyncHandler( async (req,res)=>{
-
+router.post('/users', asyncHandler( async (req,res)=>{
+    
     // Get incoming params
-    const newUser = req.query;
+    const newUser = req.body;
 
+    console.log(req.body);
     //Get ready to grab any errors
     const errors = [];
 
@@ -151,6 +152,7 @@ router.post('/users', authenticateUser, asyncHandler( async (req,res)=>{
     // Pass required fields to validation helper on line 81
     validationHelper(newUser, errors, requiredValues);
 
+    //Check to see if email exists
     if(newUser.emailAddress){
         const userExists = await User.findAndCountAll({
             where: {
@@ -168,13 +170,12 @@ router.post('/users', authenticateUser, asyncHandler( async (req,res)=>{
         // return them in the payload
         res.status(400).json({ errors });
     } else {
-
         // Create user, including hashing of password
         const createUser = await User.create({
-            firstName: req.query.firstName,
-            lastName: req.query.lastName,
-            emailAddress: req.query.emailAddress,
-            password: bcryptjs.hashSync(req.query.password)
+            firstName: newUser.firstName,
+            lastName: newUser.lastName,
+            emailAddress: newUser.emailAddress,
+            password: bcryptjs.hashSync(newUser.password)
         });
         // set location header
         res.location('/');
@@ -189,7 +190,8 @@ router.post('/users', authenticateUser, asyncHandler( async (req,res)=>{
  * PUT /api/users 201 - Updates a user
  */
 router.put('/users/:id', authenticateUser, asyncHandler( async (req, res)=>{
-
+console.log('test');
+    //console.log(req.body);
     const userUpdate = req.query;
 
     const errors= [];
@@ -245,6 +247,7 @@ router.delete('/users/:id', asyncHandler( async (req, res)=>{
   */
  router.get('/courses/:id', asyncHandler(async (req, res)=>{
     const course = await Course.findByPk(req.params.id,{
+        attributes: ["id", "title", "description", "estimatedTime", "materialsNeeded"],
         // Get the associated user, limiting which of their attributes are returned
         include: {
             model: User,
@@ -260,13 +263,14 @@ router.delete('/users/:id', asyncHandler( async (req, res)=>{
   */
 router.post('/courses', authenticateUser, asyncHandler( async (req,res)=>{
 
+    console.log(req.body);
     // Get incoming params
-    const newCourse = req.query;
+    const newCourse = req.body;
 
     // Get ready for errors
     const errors = [];
 
-    const requiredValues = ['title', 'description'];
+    const requiredValues = ['title', 'description', 'userId'];
  
     // Set up validation as described in https://teamtreehouse.com/library/rest-api-validation-with-express
     // if there are errors, put them in the errors array
@@ -278,7 +282,7 @@ router.post('/courses', authenticateUser, asyncHandler( async (req,res)=>{
         res.status(400).json({ errors });
     } else {
         // Create new course and return 201 status
-        const createCourse = await Course.create(req.query);
+        const createCourse = await Course.create(req.body);
 
         // Set location header to path to course
         res.location('/courses/'+ createCourse.id);
@@ -306,9 +310,9 @@ router.post('/courses', authenticateUser, asyncHandler( async (req,res)=>{
     // If current authorized user is different from course owner..
     if(currentUserId === currCourseOwner){
     
-        const courseUpdate = req.query;
+        const courseUpdate = req.body;
         const errors= [];
-        const requiredValues = ['title', 'description'];
+        const requiredValues = ['title', 'description', 'userId'];
 
         validationHelper(courseUpdate, errors, requiredValues);
 
@@ -316,7 +320,7 @@ router.post('/courses', authenticateUser, asyncHandler( async (req,res)=>{
             res.status(400).json({ errors });
         } else {
             const course = await Course.findByPk(req.params.id);
-            await course.update(req.query);
+            await course.update(req.body);
             res.status(204).json(course);
         }
     } else {
