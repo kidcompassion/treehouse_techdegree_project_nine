@@ -4,6 +4,8 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 
 // Include models db file, but grab only sequelize instance from it, since we need it for the authenticiation function
 const { sequelize } = require('./models');
@@ -35,6 +37,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 
 
+app.use(cors());
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));

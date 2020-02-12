@@ -55,7 +55,8 @@ const authenticateUser = async (req, res, next) => {
                                 
             // Compare password to one in DB
             const passwordMatch = bcryptjs.compareSync(credentials.pass, userPassword);
-            
+            console.log(JSON.stringify(req.headers));
+
             // If correct password, set current user property
             if(passwordMatch){
                 req.currentUser = userLookup;
@@ -74,6 +75,8 @@ const authenticateUser = async (req, res, next) => {
     }else {
         next();
     }
+
+    
   };
   
 /**
